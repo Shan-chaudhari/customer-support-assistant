@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Support Assistant</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<<div class="chat-container">
+
+    <h1>Customer Support Assistant</h1>
+
+    <div id="chatBox">
+
+    </div>
+
+    <input type="text" id="message">
+
+    <button id="sendButton">Send</button>
+
+</div>
+<script>
+const button = document.getElementById("sendButton");
+const message = document.getElementById("message");
+const chatBox = document.getElementById("chatBox");
+
+async function sendMessage() {
+
+    const userMessage = document.createElement("div");
+userMessage.classList.add("user-message");
+userMessage.textContent = "You: " + message.value;
+chatBox.appendChild(userMessage);
+
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: message.value
+        })
+    });
+    const result = await response.json();
+const aiMessage = document.createElement("div");
+aiMessage.classList.add("ai-message");
+aiMessage.textContent = "Customer Support: " + result.response;
+chatBox.appendChild(aiMessage);
+    console.log(result);
+    // optional: clear the input after sending
+    message.value = "";
+}
+button.addEventListener("click", sendMessage);
+message.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+
+});
+</script>
+
+</body>
+</html>
