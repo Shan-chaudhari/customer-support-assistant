@@ -19,11 +19,15 @@ def chat():
     data = request.get_json()
     print(data)
     message = data["message"]
-    # NOTE: OpenAI responses call removed to avoid syntax error; placeholder kept
-    print(message)
+# Read knowledge.txt
+    with open("knowledge.txt", "r") as f:
+        knowledge = f.read()
+# Combine knowledge.txt content with the user's message
+    prompt = knowledge + "\n\nUser: " + message
+    print(prompt)
     completion = client.responses.create(
         model="gpt-5.5",
-        input=message
+        input=prompt
     )
 
     return jsonify({
@@ -31,4 +35,4 @@ def chat():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
