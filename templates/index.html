@@ -8,13 +8,15 @@
 </head>
 
 <body>
-<<div class="chat-container">
+<div class="chat-container">
 
     <h1>Customer Support Assistant</h1>
 
     <div id="chatBox">
 
     </div>
+
+    <div id="buttonContainer"></div>
 
     <input type="text" id="message">
 
@@ -25,13 +27,13 @@
 const button = document.getElementById("sendButton");
 const message = document.getElementById("message");
 const chatBox = document.getElementById("chatBox");
+const buttonContainer = document.getElementById("buttonContainer");
 
-async function sendMessage() {
-
+async function sendMessage(text) {
     const userMessage = document.createElement("div");
-userMessage.classList.add("user-message");
-userMessage.textContent = "You: " + message.value;
-chatBox.appendChild(userMessage);
+    userMessage.classList.add("user-message");
+    userMessage.textContent = "You: " + text;
+    chatBox.appendChild(userMessage);
 
     const response = await fetch("/chat", {
         method: "POST",
@@ -39,25 +41,44 @@ chatBox.appendChild(userMessage);
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            message: message.value
+            message: text
         })
     });
     const result = await response.json();
-const aiMessage = document.createElement("div");
-aiMessage.classList.add("ai-message");
-aiMessage.textContent = "Customer Support: " + result.response;
-chatBox.appendChild(aiMessage);
+    const aiMessage = document.createElement("div");
+    aiMessage.classList.add("ai-message");
+    aiMessage.textContent = "Customer Support: " + result.response;
+    chatBox.appendChild(aiMessage);
+    buttonContainer.innerHTML = "";
+
+if (result.buttons) {
+
+    result.buttons.forEach(function(btn) {
+
+        const newButton = document.createElement("button");
+
+        newButton.textContent = btn.text;
+
+        newButton.onclick = function() {
+            sendMessage(btn.value);
+        };
+
+        buttonContainer.appendChild(newButton);
+
+    });
+
+}
     console.log(result);
     // optional: clear the input after sending
     message.value = "";
 }
-button.addEventListener("click", sendMessage);
+button.addEventListener("click", function () {
+    sendMessage(message.value);
+});
 message.addEventListener("keydown", function(event) {
-
     if (event.key === "Enter") {
-        sendMessage();
+        sendMessage(message.value);
     }
-
 });
 </script>
 
