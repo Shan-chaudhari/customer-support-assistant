@@ -1,10 +1,3 @@
-"""
-SQLite-backed booking storage.
-
-The UNIQUE constraint on (date, time) is the real safety net against
-double-booking: even if application logic has a bug or two requests race
-each other, the database itself will reject the second insert.
-"""
 
 import sqlite3
 import datetime
